@@ -8,4 +8,4 @@ class CurrencyAdmin(admin.ModelAdmin):
 
 @admin.register(CurrencyExchangeRate)
 class CurrencyExchangeRateAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('source_currency', 'exchanged_currency', 'rate_value', 'valuation_date')
