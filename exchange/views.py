@@ -4,11 +4,15 @@ from rest_framework.views import APIView
 
 # from rest_framework import filters
 from exchange.models import Currency, CurrencyExchangeRate
-from exchange.serializers import ConvertAmountSerializer, CurrencyExchangeRateSerializer, CurrencyRatesListSerializer, CurrencySerializer
+from exchange.serializers import (
+    ConvertAmountSerializer,
+    CurrencyExchangeRateSerializer,
+    CurrencyRatesListSerializer,
+    CurrencySerializer
+)
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.generics import ListCreateAPIView, GenericAPIView
-from django_filters import rest_framework as filters
+from rest_framework.generics import GenericAPIView
 
 from exchange.utils import get_missing_dates
 
@@ -18,9 +22,6 @@ class CurrencyViewSet(viewsets.ModelViewSet):
     """
     queryset = Currency.objects.all()
     serializer_class = CurrencySerializer
-    # filter_backends = [filters.SearchFilter]
-
-    search_fields = ['code', 'name']
 
 
 class CurrencyExchangeRateView(viewsets.ModelViewSet):
@@ -91,12 +92,18 @@ class CurrencyRatesList(GenericAPIView):
             # Get query parameters
             # print(request.query_params)
             source_currency = request.query_params.get('source_currency')
-            from_date = request.query_params.get('from_date')
-            to_date = request.query_params.get('to_date')
+            date_from = request.query_params.get('date_from')
+            date_to = request.query_params.get('date_to')
+            
+            if not all([source_currency, date_from, date_to]):
+                return Response(
+                    {'error': 'Missing required parameters'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             
             delta = timedelta(days=1)
-            start_date = datetime.strptime(from_date, "%Y-%m-%d").date()
-            end_date = datetime.strptime(to_date, "%Y-%m-%d").date()
+            start_date = datetime.strptime(date_from, "%Y-%m-%d").date()
+            end_date = datetime.strptime(date_to, "%Y-%m-%d").date()
 
             while start_date <= end_date:
                 try:
@@ -116,8 +123,8 @@ class CurrencyRatesList(GenericAPIView):
                 queryset = queryset.filter(
                     source_currency__code__iexact=source_currency,
                     exchanged_currency__code__iexact="USD",
-                    valuation_date__gte=from_date, 
-                    valuation_date__lte=to_date
+                    valuation_date__gte=date_from, 
+                    valuation_date__lte=date_to
                 )
 
             serializer = self.get_serializer(queryset, many=True)

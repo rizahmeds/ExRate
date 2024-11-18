@@ -4,19 +4,40 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 import requests
 from decimal import Decimal
+from django.core.validators import MinValueValidator
+
+from exchange.providers.base import BaseExchangeRateProvider
+from exchange.providers.currency_beacon import CurrencyBeaconProvider
+
 
 class Currency(models.Model):
     code = models.CharField(max_length=3, unique=True)
     name = models.CharField(max_length=20, db_index=True)
     symbol = models.CharField(max_length=10)
+    # is_active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = _("Currency")
         verbose_name_plural = _("Currencies")
 
     def __str__(self):
-        return self.code
+        return f"{self.code} - {self.name}"
+
+
+class ExchangeRateProvider(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    # base_url = models.URLField(max_length=200)
+    is_active = models.BooleanField(default=True)
+    priority = models.PositiveIntegerField(unique=True, validators=[MinValueValidator(1)])
+    api_key = models.CharField(max_length=100, blank=True)
     
+    class Meta:
+        ordering = ['priority']
+
+    def __str__(self):
+        return f"{self.name} (Priority: {self.priority})"
+    
+
 class CurrencyExchangeRate(models.Model):
     source_currency = models.ForeignKey(Currency, related_name='exchanges', on_delete=models.CASCADE)
     exchanged_currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
@@ -27,7 +48,7 @@ class CurrencyExchangeRate(models.Model):
         verbose_name = _("Currency Exchange Rate")
         verbose_name_plural = _("Currency Exchange Rates")
         unique_together = ('source_currency', 'exchanged_currency', 'valuation_date')
-        
+
     def __str__(self):
         return '{}: {}'.format(self.source_currency, self.exchanged_currency)
 
@@ -56,40 +77,26 @@ class CurrencyExchangeRate(models.Model):
         """
         Fetch exchange rate from the external API and store it in the database.
         """
-        # URL of the external API (CurrencyBeacon in this case)
-        url = 'https://api.currencybeacon.com/v1/historical'
-        
-        # Construct the API query parameters
-        params = {
-            'base': source_currency.code,  # Assuming the Currency model has a `code` field (e.g. 'USD')
-            'symbols': exchanged_currency.code,
-            'date': valuation_date,  # The date in the required format
-            'api_key': settings.CURRENCY_BEACON_API_KEY  # Store your API key in settings.py
-        }
-
-        # Make the API request
-        response = requests.get(url, params=params)
-        if response.status_code == 200:
-            # Parse the JSON response and retrieve the exchange rate
-            data = response.json()['response']
-            # print("data: ", data)
-            if 'rates' in data:
-                rate_value = Decimal(data['rates'][exchanged_currency.code])
-                
-                # Store the new exchange rate in the database
-                exchange_rate = CurrencyExchangeRate(
-                    source_currency=source_currency,
-                    exchanged_currency=exchanged_currency,
-                    valuation_date=valuation_date,
-                    rate_value=rate_value
+        try:
+            for provider in ExchangeRateProvider.objects.all():
+                print("provider: ", provider)
+                rate = CurrencyBeaconProvider(provider.api_key).get_exchange_rate(
+                    source_currency.code, exchanged_currency.code, valuation_date
                 )
-                exchange_rate.save()
+                if rate is not None:
+                    print("rate_value: ", rate)
+
+                    exchange_rate = CurrencyExchangeRate(
+                        source_currency=source_currency,
+                        exchanged_currency=exchanged_currency,
+                        valuation_date=valuation_date,
+                        rate_value=rate
+                    )
+                    exchange_rate.save()
+                    return
                 
-                # Return the fetched rate
-                return rate_value
-            else:
-                # Handle error if 'rate' is not in the response data
-                raise ValueError("Rate not found in the API response")
-        else:
+            raise Exception(f"Provider not able to fetch rate.")
+        
+        except Exception as e:
             # Handle error if the API request fails
-            raise Exception(f"API request failed with status code {response.status_code}")
+            raise Exception(f"API request failed: {e.__str__()}")

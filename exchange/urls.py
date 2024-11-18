@@ -10,8 +10,6 @@ router.register(r'exchange-rate', CurrencyExchangeRateView)
 # router.register(r'currency-rates-list', CurrencyRatesList, basename='CurrencyRatesList')
 
 
-
-
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [

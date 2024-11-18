@@ -46,7 +46,7 @@ The application should now be running at http://127.0.0.1:8000/admin.
 
 | Method   | URL                                      | Description                              |
 | -------- | ---------------------------------------- | ---------------------------------------- |
-| `POST`   | `/api/currency-rates-list/`              | Service to retrieve a List of currency rates for a specific time period. |
+| `GET`   | `/api/currency-rates-list/`              | Service to retrieve a List of currency rates for a specific time period. |
 | `POST`   | `/api/convert-amount/`                   | Service that calculates (latest) amount in a currency exchanged into a different currency (currency converter). |
 | `GET`    | `/api/currency/`                         | Currency CRUD. |
 | `POST`   | `/api/currency/`                         | Add Currency. |
