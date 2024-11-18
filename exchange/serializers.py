@@ -23,3 +23,20 @@ class CurrencyRatesListSerializer(CurrencyExchangeRateSerializer):
     class Meta:
         model = CurrencyExchangeRate
         fields = ['source_currency', 'valuation_date', 'rate_value']
+
+
+class ConvertAmountSerializer(CurrencyExchangeRateSerializer):
+
+    source_currency = serializers.ReadOnlyField(source='source_currency.code')
+    exchanged_currency = serializers.ReadOnlyField(source='exchanged_currency.code')
+    # amount = serializers.DecimalField(decimal_places=6, max_digits=18)
+    amount = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CurrencyExchangeRate
+        fields = ['source_currency', 'exchanged_currency', 'valuation_date', 'amount']
+    
+    def get_amount(self, obj):
+        request = self.context['request']
+        amount = request.query_params['amount']
+        return (float(amount) * float(obj.rate_value))

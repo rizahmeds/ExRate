@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 
 # from rest_framework import filters
 from exchange.models import Currency, CurrencyExchangeRate
-from exchange.serializers import CurrencyExchangeRateSerializer, CurrencyRatesListSerializer, CurrencySerializer
+from exchange.serializers import ConvertAmountSerializer, CurrencyExchangeRateSerializer, CurrencyRatesListSerializer, CurrencySerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import ListCreateAPIView, GenericAPIView
@@ -43,15 +43,44 @@ class CurrencyExchangeRateView(viewsets.ModelViewSet):
         return Response(res, status=status.HTTP_201_CREATED)
 
 
-class CurrencyExchangeRateFilter(filters.FilterSet):
-    source_currency = filters.CharFilter(field_name='source_currency__code', lookup_expr='iexact')
-    from_date = filters.DateFilter(field_name='valuation_date', lookup_expr='gte')
-    to_date = filters.DateFilter(field_name='valuation_date', lookup_expr='lte')
+class ConvertAmount(GenericAPIView):
 
-    class Meta:
-        model = CurrencyExchangeRate
-        fields = ['source_currency', 'valuation_date']
+    serializer_class = ConvertAmountSerializer
 
+    def get(self, request, *args, **kwargs):
+        print(request.query_params)
+
+        source_currency = request.query_params.get('source_currency')
+        exchanged_currency = request.query_params.get('exchanged_currency')
+        amount = request.query_params.get('amount')
+        valuation_date = datetime.today().strftime('%Y-%m-%d')
+
+        # Start with base queryset
+        try:
+            source_currency_code = Currency.objects.get(code=source_currency).pk
+            exchanged_currency_code = Currency.objects.get(code=exchanged_currency).pk
+            CurrencyExchangeRate.get_exchange_rate(source_currency_code, exchanged_currency_code, valuation_date)
+        except Exception as e:
+            print("Exception: ", e.__str__())
+
+        # Start with base queryset
+        queryset = self.get_queryset()
+       
+        queryset = queryset.filter(
+            source_currency__code__iexact=source_currency,
+            exchanged_currency__code__iexact=exchanged_currency,
+            valuation_date=valuation_date,
+        )
+        print("queryset: ", queryset)
+        serializer = self.get_serializer(queryset, many=True)
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def get_queryset(self):
+        """
+        Get optimized queryset with select_related
+        """
+        return CurrencyExchangeRate.objects.select_related().all()
 
 class CurrencyRatesList(GenericAPIView):
 
