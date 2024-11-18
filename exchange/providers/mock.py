@@ -11,14 +11,3 @@ class MockExchangeRateProvider(BaseExchangeRateProvider):
         random.seed(seed)
         rate = random.uniform(0.5, 2.0)
         return Decimal(str(rate)).quantize(Decimal("0.000001"))
-
-    def get_historical_rates(self, source_currency, exchanged_currencies, date_from, date_to):
-        result = {}
-        current_date = date_from
-        while current_date <= date_to:
-            result[current_date.isoformat()] = {
-                currency: float(self.get_exchange_rate(source_currency, currency, current_date))
-                for currency in exchanged_currencies
-            }
-            current_date += timedelta(days=1)
-        return result

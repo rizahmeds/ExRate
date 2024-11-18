@@ -1,12 +1,9 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
-from django.conf import settings
-import requests
-from decimal import Decimal
 from django.core.validators import MinValueValidator
 
-from exchange.providers.base import BaseExchangeRateProvider
+from exchange.providers import Adaptor
 from exchange.providers.currency_beacon import CurrencyBeaconProvider
 
 
@@ -14,7 +11,6 @@ class Currency(models.Model):
     code = models.CharField(max_length=3, unique=True)
     name = models.CharField(max_length=20, db_index=True)
     symbol = models.CharField(max_length=10)
-    # is_active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = _("Currency")
@@ -26,7 +22,7 @@ class Currency(models.Model):
 
 class ExchangeRateProvider(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    # base_url = models.URLField(max_length=200)
+    base_url = models.URLField(max_length=200, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     priority = models.PositiveIntegerField(unique=True, validators=[MinValueValidator(1)])
     api_key = models.CharField(max_length=100, blank=True)
@@ -79,7 +75,6 @@ class CurrencyExchangeRate(models.Model):
         """
         try:
             for provider in ExchangeRateProvider.objects.all():
-                print("provider: ", provider)
                 rate = CurrencyBeaconProvider(provider.api_key).get_exchange_rate(
                     source_currency.code, exchanged_currency.code, valuation_date
                 )
