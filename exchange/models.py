@@ -26,7 +26,8 @@ class CurrencyExchangeRate(models.Model):
     class Meta:
         verbose_name = _("Currency Exchange Rate")
         verbose_name_plural = _("Currency Exchange Rates")
-    
+        unique_together = ('source_currency', 'exchanged_currency', 'valuation_date')
+        
     def __str__(self):
         return '{}: {}'.format(self.source_currency, self.exchanged_currency)
 
