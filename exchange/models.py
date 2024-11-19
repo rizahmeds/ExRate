@@ -4,6 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MinValueValidator
 
 from exchange.providers import Adaptor
+from exchange.providers.service import DynamicExchangeService
 from exchange.providers.currency_beacon import CurrencyBeaconProvider
 
 
@@ -26,7 +27,15 @@ class ExchangeRateProvider(models.Model):
     is_active = models.BooleanField(default=True)
     priority = models.PositiveIntegerField(unique=True, validators=[MinValueValidator(1)])
     api_key = models.CharField(max_length=100, blank=True)
-    
+    provider_class = models.CharField(
+        max_length=50,
+        choices=[
+            ('currencybeacon', 'Currency Beacon'),
+            ('openexchangerates', 'Open Exchange Rates'),
+            ('mock', 'Mock Provider')
+        ]
+    )
+
     class Meta:
         ordering = ['priority']
 
@@ -75,9 +84,15 @@ class CurrencyExchangeRate(models.Model):
         """
         try:
             for provider in ExchangeRateProvider.objects.all():
-                rate = CurrencyBeaconProvider(provider.api_key).get_exchange_rate(
-                    source_currency.code, exchanged_currency.code, valuation_date
-                )
+                # Initialize the service
+                service = DynamicExchangeService()
+
+                exchange_rate = service.get_exchange_rate(source_currency.code, exchanged_currency.code, valuation_date)
+                print("service rate_value: ", exchange_rate.rate_value)
+                rate = exchange_rate.rate_value
+                # rate = CurrencyBeaconProvider(provider.api_key).get_exchange_rate(
+                #     source_currency.code, exchanged_currency.code, valuation_date
+                # )
                 if rate is not None:
                     print("rate_value: ", rate)
 
