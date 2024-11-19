@@ -38,11 +38,7 @@ python manage.py loaddata exchange/fixtures/ExchangeRateProvider.json --app exch
 ```
 python manage.py createsuperuser
 ```
-7. Load database with dummy users using management command:
-```
-python manage.py populate_users
-```
-8. Run the development server:
+7. Run the development server:
 ```
 python manage.py runserver
 ```
@@ -51,12 +47,18 @@ The application should now be running at http://127.0.0.1:8000/admin.
 
 ## API Endpoints
 
-| Method   | URL                                      | Description                              |
-| -------- | ---------------------------------------- | ---------------------------------------- |
-| `GET`   | `/api/currency-rates-list/`              | Service to retrieve a List of currency rates for a specific time period. |
-| `POST`   | `/api/convert-amount/`                   | Service that calculates (latest) amount in a currency exchanged into a different currency (currency converter). |
-| `GET`    | `/api/currency/`                         | Currency CRUD. |
-| `POST`   | `/api/currency/`                         | Add Currency. |
+| Method   | URL                            | Parameters           | Description                              |
+| -------- | ------------------------------ | -------------------- | ---------------------------------------- |
+| `GET`    | `/api/v1/currency/`            |                      | Retrieve Currencies. |
+| `POST`   | `/api/v1/currency/`            | symbol, name, code   | Create Currency. |
+| `PATCH`  | `/api/v1/currency/{id}/`       | symbol/name/code     | Update Currency. |
+| `DELETE` | `/api/v1/currency/{id}/`       |                      | Delete Currency. |
+| `GET`    | `/api/v1/currency-rates-list/` | source_currency, date_from, date_to  | retrieve a
+List of currency rates. |
+| `GET`    | `/api/v1/convert-amount/`      | source_currency, exchanged_currency, amount  | calculates (latest)
+amount in a
+currency exchanged. |
+
 
 
 # ExRate Postman Collection
