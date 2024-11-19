@@ -1,0 +1,148 @@
+{
+	"info": {
+		"_postman_id": "28a0ae2f-5316-4785-aeca-357a0b5bbefc",
+		"name": "MyCurrency",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "13695460"
+	},
+	"item": [
+		{
+			"name": "Currency rates list",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/v1/currency-rates-list/?source_currency=EUR&date_from=2024-11-08&date_to=2024-11-09",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"currency-rates-list",
+						""
+					],
+					"query": [
+						{
+							"key": "source_currency",
+							"value": "EUR"
+						},
+						{
+							"key": "date_from",
+							"value": "2024-11-08"
+						},
+						{
+							"key": "date_to",
+							"value": "2024-11-09"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Convert amount",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/v1/convert-amount/?source_currency=CHF&exchanged_currency=EUR&amount=8",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"convert-amount",
+						""
+					],
+					"query": [
+						{
+							"key": "source_currency",
+							"value": "CHF"
+						},
+						{
+							"key": "exchanged_currency",
+							"value": "EUR"
+						},
+						{
+							"key": "amount",
+							"value": "8"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve Currencies",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8000/api/v1/currency/"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Currency",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "symbol",
+							"value": "₹",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "Indian Rupee",
+							"type": "text"
+						},
+						{
+							"key": "code",
+							"value": "INR",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost:8000/api/v1/currency/"
+			},
+			"response": []
+		},
+		{
+			"name": "Update Currency",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "Indian Rupees",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost:8000/api/v1/currency/5/"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Currency",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "http://localhost:8000/api/v1/currency/6/"
+			},
+			"response": []
+		}
+	]
+}
