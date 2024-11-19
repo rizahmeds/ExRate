@@ -53,11 +53,8 @@ The application should now be running at http://127.0.0.1:8000/admin.
 | `POST`   | `/api/v1/currency/`            | symbol, name, code   | Create Currency. |
 | `PATCH`  | `/api/v1/currency/{id}/`       | symbol/name/code     | Update Currency. |
 | `DELETE` | `/api/v1/currency/{id}/`       |                      | Delete Currency. |
-| `GET`    | `/api/v1/currency-rates-list/` | source_currency, date_from, date_to  | retrieve a
-List of currency rates. |
-| `GET`    | `/api/v1/convert-amount/`      | source_currency, exchanged_currency, amount  | calculates (latest)
-amount in a
-currency exchanged. |
+| `GET`    | `/api/v1/currency-rates-list/` | source_currency, date_from, date_to | List of currency rates. |
+| `GET`    | `/api/v1/convert-amount/`      | source_currency, exchanged_currency, amount | Calculates amount |
 
 
 
