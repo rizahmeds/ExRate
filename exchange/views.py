@@ -105,10 +105,10 @@ class CurrencyRatesList(GenericAPIView):
             start_date = datetime.strptime(date_from, "%Y-%m-%d").date()
             end_date = datetime.strptime(date_to, "%Y-%m-%d").date()
 
+            source_currency_code = Currency.objects.get(code=source_currency).pk
+            exchanged_currency_code = Currency.objects.get(code="USD").pk
             while start_date <= end_date:
                 try:
-                    source_currency_code = Currency.objects.get(code=source_currency).pk
-                    exchanged_currency_code = Currency.objects.get(code="USD").pk
                     CurrencyExchangeRate.get_exchange_rate(source_currency_code, exchanged_currency_code, start_date)
                 except Exception as e:
                     print("Exception: ", e.__str__())

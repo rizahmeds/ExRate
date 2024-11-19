@@ -6,7 +6,7 @@ from exchange.views import ConvertAmount, CurrencyExchangeRateView, CurrencyRate
 
 router = routers.DefaultRouter()
 router.register(r'currency', CurrencyViewSet)
-router.register(r'exchange-rate', CurrencyExchangeRateView)
+router.register(r'exchange_rate', CurrencyExchangeRateView)
 # router.register(r'currency-rates-list', CurrencyRatesList, basename='CurrencyRatesList')
 
 
@@ -14,7 +14,7 @@ router.register(r'exchange-rate', CurrencyExchangeRateView)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('', include(router.urls)),
-    path('currency-rates-list/', CurrencyRatesList.as_view(), name='currency-rates-list'),
-    path('convert-amount/', ConvertAmount.as_view(), name='convert-amount'),
+    path('currency_rates_list/', CurrencyRatesList.as_view(), name='currency-rates-list'),
+    path('convert_amount/', ConvertAmount.as_view(), name='convert-amount'),
 
 ]
