@@ -80,30 +80,22 @@ class CurrencyExchangeRate(models.Model):
         Fetch exchange rate from the external API and store it in the database.
         """
         try:
-            for provider in ExchangeRateProvider.objects.all():
-                # Initialize the service
-                service = DynamicExchangeService()
+            # Initialize the service
+            service = DynamicExchangeService()
 
-                exchange_rate = service.get_exchange_rate(source_currency.code, exchanged_currency.code, valuation_date)
-                print("service rate_value: ", exchange_rate.rate_value)
-                rate = exchange_rate.rate_value
-                # rate = CurrencyBeaconProvider(provider.api_key).get_exchange_rate(
-                #     source_currency.code, exchanged_currency.code, valuation_date
-                # )
-                if rate is not None:
-                    print("rate_value: ", rate)
-
-                    exchange_rate = CurrencyExchangeRate(
-                        source_currency=source_currency,
-                        exchanged_currency=exchanged_currency,
-                        valuation_date=valuation_date,
-                        rate_value=rate
-                    )
-                    exchange_rate.save()
-                    return
-                
-            raise Exception(f"Provider not able to fetch rate.")
-        
+            exchange_rate = service.get_exchange_rate(source_currency.code, exchanged_currency.code, valuation_date)
+            print("service rate_value: ", exchange_rate.rate_value)
+            rate = exchange_rate.rate_value
+            if rate is not None:
+                print("rate_value: ", rate)
+                exchange_rate = CurrencyExchangeRate(
+                    source_currency=source_currency,
+                    exchanged_currency=exchanged_currency,
+                    valuation_date=valuation_date,
+                    rate_value=rate
+                )
+                exchange_rate.save()
+                        
         except Exception as e:
             # Handle error if the API request fails
             raise Exception(f"API request failed: {e.__str__()}")
