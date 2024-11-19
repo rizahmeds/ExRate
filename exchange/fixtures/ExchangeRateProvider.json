@@ -1,0 +1,38 @@
+[
+{
+    "model": "exchange.exchangerateprovider",
+    "pk": 1,
+    "fields": {
+        "name": "Currency Beacon",
+        "base_url": "https://api.currencybeacon.com/v1",
+        "is_active": true,
+        "priority": 1,
+        "api_key": "RELACE_WITH_ORIGINAL_API_KEY",
+        "provider_class": "currencybeacon"
+    }
+},
+{
+    "model": "exchange.exchangerateprovider",
+    "pk": 2,
+    "fields": {
+        "name": "Open Exchange Rates",
+        "base_url": "https://openexchangerates.org/api",
+        "is_active": true,
+        "priority": 2,
+        "api_key": "RELACE_WITH_ORIGINAL_API_KEY",
+        "provider_class": "openexchangerates"
+    }
+},
+{
+    "model": "exchange.exchangerateprovider",
+    "pk": 3,
+    "fields": {
+        "name": "Mock",
+        "base_url": "http://mock.com/api/",
+        "is_active": true,
+        "priority": 3,
+        "api_key": "RELACE_WITH_ORIGINAL_API_KEY",
+        "provider_class": "mock"
+    }
+}
+]

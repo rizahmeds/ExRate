@@ -27,15 +27,22 @@ pip install -r requirements.txt
 ```
 python manage.py migrate
 ```
-5. Create a superuser (admin) account:
+5. To load data:
+```
+python manage.py loaddata exchange/fixtures/Currency.json --app exchange.Currency
+python manage.py loaddata exchange/fixtures/CurrencyExchangeRate.json --app exchange.CurrencyExchangeRate
+python manage.py loaddata exchange/fixtures/ExchangeRateProvider.json --app exchange.ExchangeRateProvider
+
+```
+6. Create a superuser (admin) account:
 ```
 python manage.py createsuperuser
 ```
-6. Load database with dummy users using management command:
+7. Load database with dummy users using management command:
 ```
 python manage.py populate_users
 ```
-7. Run the development server:
+8. Run the development server:
 ```
 python manage.py runserver
 ```
