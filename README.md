@@ -12,7 +12,7 @@ Django Rest Framework based Backend of a web platform that allows users to calcu
 1. Clone the repository:
 ```
 git clone https://github.com/rizahmeds/ExRate.git
-cd socio
+cd ExRate
 ```
 2. Create a virtual environment and activate it:
 ```
