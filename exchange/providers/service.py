@@ -1,21 +1,17 @@
 # services.py
-from dataclasses import dataclass
-import random
 from typing import Optional, Dict, Type
 from django.core.cache import cache
-from decimal import Decimal
 from datetime import date
 import logging
-import requests
 
-from exchange.providers.clients import ( 
-    BaseProviderClient, 
-    CurrencyBeaconClient, 
-    MockProviderClient, 
-    OpenExchangeRatesClient
-)
+from exchange.providers.clients.base import BaseProviderClient
+from exchange.providers.clients.currency_beacon import CurrencyBeaconClient
+from exchange.providers.clients.mock import MockProviderClient
+from exchange.providers.clients.open_exchange_rates import OpenExchangeRatesClient
+
 
 logger = logging.getLogger(__name__)
+
 
 class DynamicExchangeService:
     """Service that uses provider configurations from the database"""
